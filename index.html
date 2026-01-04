@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="bg">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -19,7 +20,9 @@
             --cat-place-border: #F44336;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Verdana', sans-serif;
@@ -39,7 +42,8 @@
             font-size: 1.4rem;
             color: #ff5722;
             flex: 0 0 auto;
-            padding-right: 30px; /* Място за бутона ? */
+            padding-right: 30px;
+            text-align: center;
         }
 
         /* --- БУТОН ЗА ИНФОРМАЦИЯ --- */
@@ -56,20 +60,20 @@
             font-weight: bold;
             font-size: 1.2rem;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             z-index: 200;
         }
 
-        /* --- МОДАЛЕН ПРОЗОРЕЦ (СКРИТ) --- */
+        /* --- МОДАЛЕН ПРОЗОРЕЦ --- */
         .modal {
-            display: none; /* Скрит по подразбиране */
+            display: none;
             position: fixed;
             z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.6); /* Тъмен фон */
+            background-color: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(3px);
             align-items: center;
             justify-content: center;
@@ -83,8 +87,8 @@
             width: 90%;
             max-width: 500px;
             max-height: 85vh;
-            overflow-y: auto; /* Скрол ако текстът е дълъг */
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
             position: relative;
             animation: fadeIn 0.3s;
         }
@@ -99,13 +103,11 @@
             cursor: pointer;
             line-height: 1;
         }
-        .close-modal:hover { color: #f44336; }
 
         .modal h2 { color: #ff5722; margin-top: 0; }
         .modal h3 { color: #2196F3; margin-bottom: 5px; margin-top: 15px; }
         .modal p, .modal ul { font-size: 0.95rem; line-height: 1.5; color: #444; }
         .modal ul { padding-left: 20px; margin-top: 5px; }
-        .modal li { margin-bottom: 5px; }
 
         /* --- LEGEND & CONTROLS --- */
         .legend-container {
@@ -126,8 +128,17 @@
         .dot.item { background: var(--cat-item-border); }
         .dot.place { background: var(--cat-place-border); }
 
-        .controls { margin-bottom: 5px; flex: 0 0 auto; }
-        select { font-size: 0.9rem; padding: 2px 8px; border-radius: 6px; border: 1px solid #ccc; }
+        .controls {
+            margin-bottom: 5px;
+            flex: 0 0 auto;
+        }
+
+        select {
+            font-size: 0.9rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
 
         /* --- GAME BOARD --- */
         .game-board {
@@ -137,17 +148,22 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-auto-rows: minmax(0, 1fr);
-            gap: 6px;
+            gap: 8px;
             padding: 5px 0;
             overflow-y: auto;
+            padding-bottom: 20px;
         }
 
-        @media (min-width: 500px) { .game-board { grid-template-columns: 1fr 1fr 1fr; } }
+        @media (min-width: 500px) {
+            .game-board {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
 
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -157,39 +173,58 @@
             border-bottom: 4px solid #ccc;
             cursor: pointer;
             height: 100%;
-            max-height: 25vh;
+            min-height: 110px;
         }
 
         .card:active { transform: scale(0.97); }
+
         .card.cat-hero { background: var(--cat-hero-bg); border-color: var(--cat-hero-border); }
         .card.cat-item { background: var(--cat-item-bg); border-color: var(--cat-item-border); }
         .card.cat-place { background: var(--cat-place-bg); border-color: var(--cat-place-border); }
+
         .card.speaking { outline: 3px solid #2196F3; }
 
-        .card-icon { font-size: 2.5rem; line-height: 1; margin-bottom: 2px; }
-        .card-text {
-            font-size: 0.8rem; font-weight: bold; text-align: center; line-height: 1.1;
-            width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        .card-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+            margin-bottom: 2px;
+            margin-top: 10px;
         }
 
-        /* УВЕЛИЧЕН БУТОН ЗА СМЯНА */
+        .card-text {
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.1;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* БУТОН ЗА СМЯНА - ГОРЕ ВДЯСНО */
         .swap-btn {
             position: absolute;
-            top: 2px;
-            right: 2px;
-            background: rgba(255,255,255,0.95);
+            top: 4px;
+            right: 4px;
+            background: rgba(255, 255, 255, 0.9);
             color: var(--refresh-btn);
             border: 2px solid var(--refresh-btn);
             border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            font-size: 1.4rem;
+            width: 32px;
+            height: 32px;
+            font-size: 1.2rem;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 5;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .swap-btn:active {
+            background: var(--refresh-btn);
+            color: white;
         }
 
         .main-action {
@@ -202,19 +237,32 @@
             font-size: 1.1rem;
             font-weight: bold;
             border-radius: 50px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
             width: 80%;
             max-width: 300px;
         }
 
-        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px) rotate(-3deg); } 75% { transform: translateX(3px) rotate(3deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px) rotate(-3deg); }
+            75% { transform: translateX(3px) rotate(3deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .animate-pop { animation: popIn 0.3s ease-out; }
         .animate-shake { animation: shake 0.3s ease-in-out; }
     </style>
 </head>
+
 <body>
 
     <button class="info-btn" onclick="openModal()">?</button>
@@ -224,7 +272,7 @@
     <div class="legend-container">
         <div class="legend-item"><span class="dot hero"></span> Герой</div>
         <div class="legend-item"><span class="dot item"></span> Предмет</div>
-        <div class="legend-item"><span class="dot place"></span> Място</div>
+        <div class="legend-item"><span class="dot place"></span> Място/Обстоятелство</div>
     </div>
 
     <div class="controls">
@@ -234,6 +282,9 @@
             <option value="4">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
         </select>
     </div>
 
@@ -249,16 +300,13 @@
             <h2>📖 Как се играе?</h2>
             <p>1. Изберете броя на картите.</p>
             <p>2. Натиснете <strong>"Смени всички"</strong>.</p>
-            <p>3. Използвайте картинките, за да съставите история. Примерно започнете с <em>"Имало едно време..."</em></p>
-
+            <p>3. Използвайте картинките, за да съставите история. Започнете с <em>"Имало едно време..."</em></p>
             <h3>💡 Съвети:</h3>
             <ul>
-                <li><strong>Няма грешни отговори!</strong> Оставете въображението на детето да работи, дори историята да е нелогична.</li>
-                <li><strong>Задавайте въпроси:</strong> "Защо героят взе този предмет?", "Къде отидоха след това?"</li>
-                <li><strong>Редувайте се:</strong> Вие кажете едно изречение, детето - следващото.</li>
-                <li><strong>Използвайте цветовете:</strong> Зеленото е Герой, Жълтото е Предмет, Червеното е Място/Обстоятелство.</li>
+                <li>Натиснете картинката, за да чуете думата.</li>
+                <li>Натиснете малкото бутонче ↻, за да смените само тази картинка.</li>
+                <li><strong>Зелено</strong> = Герой, <strong>Жълто</strong> = Предмет, <strong>Червено</strong> = Място/Обстоятелство.</li>
             </ul>
-            <p style="text-align:center; margin-top:15px; font-size:0.8rem; color:#888;">Приятна игра!</p>
         </div>
     </div>
 
@@ -269,7 +317,6 @@
         }
 
         function closeModal(event, force) {
-            // Затваря само ако се кликне върху тъмния фон или хикса
             if (force || event.target.id === 'infoModal') {
                 document.getElementById('infoModal').style.display = 'none';
             }
@@ -277,11 +324,11 @@
 
         // --- ДАННИ ---
         const db = [
-            // ГЕРОИ (18) - Кой участва?
+            // ГЕРОИ (18)
             { id: 1, text: "Момче", icon: "👦", cat: "hero" },
             { id: 2, text: "Момиче", icon: "👧", cat: "hero" },
             { id: 3, text: "Бебе", icon: "👶", cat: "hero" },
-            { id: 4, text: "Дядо", icon: "👴", cat: "hero" }, // Единичен образ за яснота
+            { id: 4, text: "Дядо", icon: "👴", cat: "hero" },
             { id: 5, text: "Супергерой", icon: "🦸", cat: "hero" },
             { id: 6, text: "Пират", icon: "🏴‍☠️", cat: "hero" },
             { id: 7, text: "Куче", icon: "🐶", cat: "hero" },
@@ -295,13 +342,13 @@
             { id: 15, text: "Робот", icon: "🤖", cat: "hero" },
             { id: 16, text: "Извънземно", icon: "👽", cat: "hero" },
             { id: 17, text: "Фея", icon: "🧚", cat: "hero" },
-            { id: 18, text: "Чудовище", icon: "👾", cat: "hero" }, // По-интересно за сюжет
+            { id: 18, text: "Чудовище", icon: "👾", cat: "hero" },
 
-            // ПРЕДМЕТИ (18) - Какво се случва?
+            // ПРЕДМЕТИ (18)
             { id: 19, text: "Топка", icon: "⚽", cat: "item" },
             { id: 20, text: "Мече", icon: "🧸", cat: "item" },
             { id: 21, text: "Количка", icon: "🚗", cat: "item" },
-            { id: 22, text: "Корона", icon: "👑", cat: "item" }, // За принцеси/крале
+            { id: 22, text: "Корона", icon: "👑", cat: "item" },
             { id: 23, text: "Балон", icon: "🎈", cat: "item" },
             { id: 24, text: "Книга", icon: "📖", cat: "item" },
             { id: 25, text: "Вълшебна пръчка", icon: "🪄", cat: "item" },
@@ -315,9 +362,9 @@
             { id: 33, text: "Лодка", icon: "⛵", cat: "item" },
             { id: 34, text: "Влак", icon: "🚂", cat: "item" },
             { id: 35, text: "Торта", icon: "🎂", cat: "item" },
-            { id: 36, text: "Сладолед", icon: "🍦", cat: "item" }, // Любимо на децата
+            { id: 36, text: "Сладолед", icon: "🍦", cat: "item" },
 
-            // СРЕДА И ЕМОЦИИ (18) - Къде и как?
+            // СРЕДА И ЕМОЦИИ (18)
             { id: 37, text: "Къща", icon: "🏠", cat: "place" },
             { id: 38, text: "Училище", icon: "🏫", cat: "place" },
             { id: 39, text: "Пързалка", icon: "🛝", cat: "place" },
@@ -333,8 +380,8 @@
             { id: 49, text: "Замък", icon: "🏰", cat: "place" },
             { id: 50, text: "Остров", icon: "🏝️", cat: "place" },
             { id: 51, text: "Легло", icon: "🛏️", cat: "place" },
-            { id: 52, text: "Радост", icon: "😊", cat: "place" }, // Директно емоджи
-            { id: 53, text: "Тъга", icon: "😢", cat: "place" }, // Директно емоджи
+            { id: 52, text: "Радост", icon: "😊", cat: "place" },
+            { id: 53, text: "Тъга", icon: "😢", cat: "place" },
             { id: 54, text: "Сърце", icon: "❤️", cat: "place" }
         ];
 
@@ -350,7 +397,7 @@
         function speak(text, cardElement) {
             if (!('speechSynthesis' in window)) return;
             document.querySelectorAll('.card').forEach(c => c.classList.remove('speaking'));
-            if(cardElement) {
+            if (cardElement) {
                 cardElement.classList.add('speaking');
                 setTimeout(() => cardElement.classList.remove('speaking'), 1000);
             }
@@ -387,28 +434,57 @@
             const board = document.getElementById('game-board');
             board.innerHTML = '';
 
+            // --- НОВА ЛОГИКА ЗА БАЛАНС ---
+            // Дефинираме схемите за разпределение на бройките
+            let counts = []; // Ще съхранява 3 числа, напр. [2, 1, 1] за 4 карти
+
+            switch(count) {
+                case 3: counts = [1, 1, 1]; break;
+                case 4: counts = [2, 1, 1]; break;
+                case 5: counts = [1, 2, 2]; break; // 1 уникален, другите по 2
+                case 6: counts = [2, 2, 2]; break;
+                case 7: counts = [3, 2, 2]; break;
+                case 8: counts = [2, 3, 3]; break; // 2 от един цвят, другите по 3
+                case 9: counts = [3, 3, 3]; break;
+                default: counts = [1, 1, 1];
+            }
+
+            // Категориите
+            let categories = ['hero', 'item', 'place'];
+
+            // Разбъркваме категориите, за да не е винаги "hero" този с най-много/най-малко карти
+            categories = shuffle(categories);
+
             let selection = [];
-            if (count >= 3) {
-                selection.push(shuffle(db.filter(x => x.cat === 'hero'))[0]);
-                selection.push(shuffle(db.filter(x => x.cat === 'item'))[0]);
-                selection.push(shuffle(db.filter(x => x.cat === 'place'))[0]);
+
+            // За всяка от 3-те категории теглим нужния брой карти
+            for (let i = 0; i < 3; i++) {
+                const catName = categories[i];
+                const numNeeded = counts[i];
+
+                if (numNeeded > 0) {
+                    const pool = db.filter(x => x.cat === catName);
+                    const shuffledPool = shuffle([...pool]); // Копираме и разбъркваме
+                    const chosen = shuffledPool.slice(0, numNeeded);
+                    selection = selection.concat(chosen);
+                }
             }
 
-            const usedIds = selection.map(x => x.id);
-            const remaining = shuffle(db.filter(x => !usedIds.includes(x.id)));
-
-            while (selection.length < count) {
-                selection.push(remaining.pop());
-            }
-
+            // Накрая разбъркваме целия избор, за да не са подредени по цвят
             currentItems = shuffle(selection);
+
             currentItems.forEach((item, index) => createCardDOM(item, index));
         }
 
         function changeOne(index) {
+            const currentItem = currentItems[index];
+            const currentCat = currentItem.cat;
+
+            const catPool = db.filter(x => x.cat === currentCat);
             const visibleIds = currentItems.map(x => x.id);
-            const available = db.filter(x => !visibleIds.includes(x.id));
-            if(available.length === 0) return;
+            const available = catPool.filter(x => !visibleIds.includes(x.id));
+
+            if (available.length === 0) return;
 
             const newItem = available[Math.floor(Math.random() * available.length)];
             currentItems[index] = newItem;
@@ -445,4 +521,5 @@
         window.onload = rollAll;
     </script>
 </body>
+
 </html>
