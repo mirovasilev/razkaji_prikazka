@@ -19,31 +19,95 @@
             --cat-place-border: #F44336;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Verdana', sans-serif;
             background-color: var(--bg-color);
             margin: 0;
             padding: 10px;
-            /* КЛЮЧОВО: Заема целия екран и подрежда елементите вертикално */
-            height: 100dvh; /* dvh е по-добро за мобилни от vh */
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow: hidden; /* Спираме скрола на цялата страница */
+            overflow: hidden;
+            position: relative;
         }
 
         h1 {
             margin: 0 0 5px 0;
             font-size: 1.4rem;
             color: #ff5722;
-            flex: 0 0 auto; /* Не се свива/разтяга */
+            flex: 0 0 auto;
+            padding-right: 30px; /* Място за бутона ? */
         }
 
-        /* Супер компактна легенда */
+        /* --- БУТОН ЗА ИНФОРМАЦИЯ --- */
+        .info-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: #2196F3;
+            color: white;
+            border-radius: 50%;
+            border: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 200;
+        }
+
+        /* --- МОДАЛЕН ПРОЗОРЕЦ (СКРИТ) --- */
+        .modal {
+            display: none; /* Скрит по подразбиране */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6); /* Тъмен фон */
+            backdrop-filter: blur(3px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto; /* Скрол ако текстът е дълъг */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            position: relative;
+            animation: fadeIn 0.3s;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .close-modal:hover { color: #f44336; }
+
+        .modal h2 { color: #ff5722; margin-top: 0; }
+        .modal h3 { color: #2196F3; margin-bottom: 5px; margin-top: 15px; }
+        .modal p, .modal ul { font-size: 0.95rem; line-height: 1.5; color: #444; }
+        .modal ul { padding-left: 20px; margin-top: 5px; }
+        .modal li { margin-bottom: 5px; }
+
+        /* --- LEGEND & CONTROLS --- */
         .legend-container {
             display: flex;
             justify-content: center;
@@ -62,108 +126,74 @@
         .dot.item { background: var(--cat-item-border); }
         .dot.place { background: var(--cat-place-border); }
 
-        .controls {
-            margin-bottom: 5px;
-            flex: 0 0 auto;
-        }
+        .controls { margin-bottom: 5px; flex: 0 0 auto; }
+        select { font-size: 0.9rem; padding: 2px 8px; border-radius: 6px; border: 1px solid #ccc; }
 
-        select {
-            font-size: 0.9rem;
-            padding: 2px 8px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-
-        /* --- ГЕЙМ БОРД --- */
+        /* --- GAME BOARD --- */
         .game-board {
-            /* Заема цялото останало свободно място между менюто и бутона */
             flex: 1 1 auto;
             width: 100%;
             max-width: 600px;
-
             display: grid;
-            grid-template-columns: 1fr 1fr; /* 2 колони */
-            /* Автоматични редове, които се опитват да се съберат във височината */
+            grid-template-columns: 1fr 1fr;
             grid-auto-rows: minmax(0, 1fr);
-            gap: 6px; /* Малко разстояние */
-
+            gap: 6px;
             padding: 5px 0;
-            overflow-y: auto; /* В краен случай скрол само тук */
+            overflow-y: auto;
         }
 
-        /* При 3 колони на по-широки екрани */
-        @media (min-width: 500px) {
-            .game-board {
-                grid-template-columns: 1fr 1fr 1fr;
-            }
-        }
+        @media (min-width: 500px) { .game-board { grid-template-columns: 1fr 1fr 1fr; } }
 
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-
-            /* Минимални отстояния вътре */
             padding: 4px;
             position: relative;
             border-bottom: 4px solid #ccc;
             cursor: pointer;
-
-            /* Гарантираме, че картата няма да стане твърде висока */
             height: 100%;
-            max-height: 25vh; /* Предпазна мярка */
+            max-height: 25vh;
         }
 
         .card:active { transform: scale(0.97); }
-
         .card.cat-hero { background: var(--cat-hero-bg); border-color: var(--cat-hero-border); }
         .card.cat-item { background: var(--cat-item-bg); border-color: var(--cat-item-border); }
         .card.cat-place { background: var(--cat-place-bg); border-color: var(--cat-place-border); }
-
         .card.speaking { outline: 3px solid #2196F3; }
 
-        .card-icon {
-            font-size: 2.5rem; /* По-малки икони */
-            line-height: 1;
-            margin-bottom: 2px;
-        }
-
+        .card-icon { font-size: 2.5rem; line-height: 1; margin-bottom: 2px; }
         .card-text {
-            font-size: 0.8rem; /* По-малък шрифт */
-            font-weight: bold;
-            text-align: center;
-            line-height: 1.1;
-            width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 0.8rem; font-weight: bold; text-align: center; line-height: 1.1;
+            width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
+        /* УВЕЛИЧЕН БУТОН ЗА СМЯНА */
         .swap-btn {
             position: absolute;
             top: 2px;
             right: 2px;
-            background: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.95);
             color: var(--refresh-btn);
-            border: 1px solid #ddd;
+            border: 2px solid var(--refresh-btn);
             border-radius: 50%;
-            width: 24px; /* По-малко бутонче */
-            height: 24px;
-            font-size: 0.9rem;
+            width: 36px;
+            height: 36px;
+            font-size: 1.4rem;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 5;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* Бутонът вече не е fixed, а flex item */
         .main-action {
-            flex: 0 0 auto; /* Фиксирана височина */
+            flex: 0 0 auto;
             margin-top: 5px;
             background-color: var(--primary-btn);
             color: white;
@@ -177,23 +207,19 @@
             max-width: 300px;
         }
 
-        /* Анимации */
-        @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-3px) rotate(-3deg); }
-            75% { transform: translateX(3px) rotate(3deg); }
-        }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px) rotate(-3deg); } 75% { transform: translateX(3px) rotate(3deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
         .animate-pop { animation: popIn 0.3s ease-out; }
         .animate-shake { animation: shake 0.3s ease-in-out; }
     </style>
 </head>
 <body>
 
-    <h1>Разкажи приказка</h1>
+    <button class="info-btn" onclick="openModal()">?</button>
+
+    <h1>✨ Разкажи приказка ✨</h1>
 
     <div class="legend-container">
         <div class="legend-item"><span class="dot hero"></span> Герой</div>
@@ -217,8 +243,39 @@
         🎲 ХВЪРЛИ ВСИЧКИ
     </button>
 
+    <div id="infoModal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal(event, true)">&times;</span>
+            <h2>📖 Как се играе?</h2>
+            <p>1. Изберете броя на картите.</p>
+            <p>2. Натиснете <strong>"Хвърли всички"</strong>.</p>
+            <p>3. Използвайте картинките, за да съставите история. Започнете с <em>"Имало едно време..."</em></p>
+
+            <h3>💡 Съвети за родители:</h3>
+            <ul>
+                <li><strong>Няма грешни отговори!</strong> Оставете въображението на детето да работи, дори историята да е нелогична.</li>
+                <li><strong>Задавайте въпроси:</strong> "Защо героят взе този предмет?", "Къде отидоха след това?"</li>
+                <li><strong>Редувайте се:</strong> Вие кажете едно изречение, детето - следващото.</li>
+                <li><strong>Използвайте цветовете:</strong> Зеленото е Герой, Жълтото е Предмет, Червеното е Място.</li>
+            </ul>
+            <p style="text-align:center; margin-top:15px; font-size:0.8rem; color:#888;">Приятна игра!</p>
+        </div>
+    </div>
+
     <script>
-        // ДАННИ
+        // --- ЛОГИКА ЗА МОДАЛНИЯ ПРОЗОРЕЦ ---
+        function openModal() {
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        function closeModal(event, force) {
+            // Затваря само ако се кликне върху тъмния фон или хикса
+            if (force || event.target.id === 'infoModal') {
+                document.getElementById('infoModal').style.display = 'none';
+            }
+        }
+
+        // --- ДАННИ ---
         const db = [
             { id: 1, text: "Момче", icon: "👦", cat: "hero" },
             { id: 2, text: "Момиче", icon: "👧", cat: "hero" },
