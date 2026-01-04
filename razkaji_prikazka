@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Приказни Зарчета</title>
+    <style>
+        :root {
+            --bg-color: #f0f8ff;
+            --card-bg: #ffffff;
+            --primary-btn: #FF9800;
+            --refresh-btn: #2196F3;
+
+            --cat-hero-bg: #e8f5e9;
+            --cat-hero-border: #4CAF50;
+            --cat-item-bg: #fffde7;
+            --cat-item-border: #FFC107;
+            --cat-place-bg: #ffebee;
+            --cat-place-border: #F44336;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Verdana', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 10px;
+            /* КЛЮЧОВО: Заема целия екран и подрежда елементите вертикално */
+            height: 100dvh; /* dvh е по-добро за мобилни от vh */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden; /* Спираме скрола на цялата страница */
+        }
+
+        h1 {
+            margin: 0 0 5px 0;
+            font-size: 1.4rem;
+            color: #ff5722;
+            flex: 0 0 auto; /* Не се свива/разтяга */
+        }
+
+        /* Супер компактна легенда */
+        .legend-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 5px;
+            font-size: 0.75rem;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            flex: 0 0 auto;
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 4px; font-weight: bold; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dot.hero { background: var(--cat-hero-border); }
+        .dot.item { background: var(--cat-item-border); }
+        .dot.place { background: var(--cat-place-border); }
+
+        .controls {
+            margin-bottom: 5px;
+            flex: 0 0 auto;
+        }
+
+        select {
+            font-size: 0.9rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        /* --- ГЕЙМ БОРД --- */
+        .game-board {
+            /* Заема цялото останало свободно място между менюто и бутона */
+            flex: 1 1 auto;
+            width: 100%;
+            max-width: 600px;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 колони */
+            /* Автоматични редове, които се опитват да се съберат във височината */
+            grid-auto-rows: minmax(0, 1fr);
+            gap: 6px; /* Малко разстояние */
+
+            padding: 5px 0;
+            overflow-y: auto; /* В краен случай скрол само тук */
+        }
+
+        /* При 3 колони на по-широки екрани */
+        @media (min-width: 500px) {
+            .game-board {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            /* Минимални отстояния вътре */
+            padding: 4px;
+            position: relative;
+            border-bottom: 4px solid #ccc;
+            cursor: pointer;
+
+            /* Гарантираме, че картата няма да стане твърде висока */
+            height: 100%;
+            max-height: 25vh; /* Предпазна мярка */
+        }
+
+        .card:active { transform: scale(0.97); }
+
+        .card.cat-hero { background: var(--cat-hero-bg); border-color: var(--cat-hero-border); }
+        .card.cat-item { background: var(--cat-item-bg); border-color: var(--cat-item-border); }
+        .card.cat-place { background: var(--cat-place-bg); border-color: var(--cat-place-border); }
+
+        .card.speaking { outline: 3px solid #2196F3; }
+
+        .card-icon {
+            font-size: 2.5rem; /* По-малки икони */
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .card-text {
+            font-size: 0.8rem; /* По-малък шрифт */
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.1;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .swap-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(255,255,255,0.7);
+            color: var(--refresh-btn);
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            width: 24px; /* По-малко бутонче */
+            height: 24px;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+
+        /* Бутонът вече не е fixed, а flex item */
+        .main-action {
+            flex: 0 0 auto; /* Фиксирана височина */
+            margin-top: 5px;
+            background-color: var(--primary-btn);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            width: 80%;
+            max-width: 300px;
+        }
+
+        /* Анимации */
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px) rotate(-3deg); }
+            75% { transform: translateX(3px) rotate(3deg); }
+        }
+        .animate-pop { animation: popIn 0.3s ease-out; }
+        .animate-shake { animation: shake 0.3s ease-in-out; }
+    </style>
+</head>
+<body>
+
+    <h1>Разкажи приказка</h1>
+
+    <div class="legend-container">
+        <div class="legend-item"><span class="dot hero"></span> Герой</div>
+        <div class="legend-item"><span class="dot item"></span> Предмет</div>
+        <div class="legend-item"><span class="dot place"></span> Място</div>
+    </div>
+
+    <div class="controls">
+        <label for="count-select">Брой:</label>
+        <select id="count-select" onchange="rollAll()">
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+        </select>
+    </div>
+
+    <div id="game-board" class="game-board"></div>
+
+    <button class="main-action" onclick="rollAllWithAnimation()">
+        🎲 ХВЪРЛИ ВСИЧКИ
+    </button>
+
+    <script>
+        // ДАННИ
+        const db = [
+            { id: 1, text: "Момче", icon: "👦", cat: "hero" },
+            { id: 2, text: "Момиче", icon: "👧", cat: "hero" },
+            { id: 3, text: "Бебе", icon: "👶", cat: "hero" },
+            { id: 4, text: "Баба и Дядо", icon: "👵👴", cat: "hero" },
+            { id: 5, text: "Супергерой", icon: "🦸", cat: "hero" },
+            { id: 6, text: "Пират", icon: "🏴‍☠️", cat: "hero" },
+            { id: 7, text: "Куче", icon: "🐶", cat: "hero" },
+            { id: 8, text: "Котка", icon: "🐱", cat: "hero" },
+            { id: 9, text: "Зайче", icon: "🐰", cat: "hero" },
+            { id: 10, text: "Птиче", icon: "🐦", cat: "hero" },
+            { id: 11, text: "Конче", icon: "🐴", cat: "hero" },
+            { id: 12, text: "Слонче", icon: "🐘", cat: "hero" },
+            { id: 13, text: "Дракон", icon: "🐲", cat: "hero" },
+            { id: 14, text: "Динозавър", icon: "🦖", cat: "hero" },
+            { id: 15, text: "Робот", icon: "🤖", cat: "hero" },
+            { id: 16, text: "Извънземно", icon: "👽", cat: "hero" },
+            { id: 17, text: "Фея", icon: "🧚‍♀️", cat: "hero" },
+            { id: 18, text: "Рицар", icon: "🛡️", cat: "hero" },
+            { id: 19, text: "Топка", icon: "⚽", cat: "item" },
+            { id: 20, text: "Плюшено мече", icon: "🧸", cat: "item" },
+            { id: 21, text: "Количка", icon: "🚗", cat: "item" },
+            { id: 22, text: "Кукла", icon: "🎎", cat: "item" },
+            { id: 23, text: "Балон", icon: "🎈", cat: "item" },
+            { id: 24, text: "Книга", icon: "📖", cat: "item" },
+            { id: 25, text: "Очила", icon: "👓", cat: "item" },
+            { id: 26, text: "Лъжица", icon: "🥄", cat: "item" },
+            { id: 27, text: "Обувки", icon: "👟", cat: "item" },
+            { id: 28, text: "Ключ", icon: "🔑", cat: "item" },
+            { id: 29, text: "Фенерче", icon: "🔦", cat: "item" },
+            { id: 30, text: "Подарък", icon: "🎁", cat: "item" },
+            { id: 31, text: "Колело", icon: "🚲", cat: "item" },
+            { id: 32, text: "Ракета", icon: "🚀", cat: "item" },
+            { id: 33, text: "Лодка", icon: "⛵", cat: "item" },
+            { id: 34, text: "Влак", icon: "🚂", cat: "item" },
+            { id: 35, text: "Вълшебна пръчка", icon: "🪄", cat: "item" },
+            { id: 36, text: "Торта", icon: "🎂", cat: "item" },
+            { id: 37, text: "Къща", icon: "🏠", cat: "place" },
+            { id: 38, text: "Училище", icon: "🏫", cat: "place" },
+            { id: 39, text: "Пързалка", icon: "🛝", cat: "place" },
+            { id: 40, text: "Гора", icon: "🌲", cat: "place" },
+            { id: 41, text: "Плаж", icon: "🏖️", cat: "place" },
+            { id: 42, text: "Космос", icon: "🪐", cat: "place" },
+            { id: 43, text: "Слънце", icon: "☀️", cat: "place" },
+            { id: 44, text: "Луна", icon: "🌙", cat: "place" },
+            { id: 45, text: "Дъга", icon: "🌈", cat: "place" },
+            { id: 46, text: "Дъжд", icon: "🌧️", cat: "place" },
+            { id: 47, text: "Сняг", icon: "❄️", cat: "place" },
+            { id: 48, text: "Цвете", icon: "🌸", cat: "place" },
+            { id: 49, text: "Пещера", icon: "🪨", cat: "place" },
+            { id: 50, text: "Замък", icon: "🏰", cat: "place" },
+            { id: 51, text: "Остров", icon: "🏝️", cat: "place" },
+            { id: 52, text: "Планина", icon: "🏔️", cat: "place" },
+            { id: 53, text: "Легло", icon: "🛏️", cat: "place" },
+            { id: 54, text: "Обич", icon: "❤️", cat: "place" }
+        ];
+
+        let currentItems = [];
+        let voices = [];
+
+        function initVoices() { voices = window.speechSynthesis.getVoices(); }
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = initVoices;
+            initVoices();
+        }
+
+        function speak(text, cardElement) {
+            if (!('speechSynthesis' in window)) return;
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('speaking'));
+            if(cardElement) {
+                cardElement.classList.add('speaking');
+                setTimeout(() => cardElement.classList.remove('speaking'), 1000);
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            const bgVoice = voices.find(v => v.lang.includes('bg'));
+            if (bgVoice) utterance.voice = bgVoice;
+            utterance.lang = 'bg-BG';
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function shuffle(array) {
+            let cur = array.length, rnd;
+            while (cur != 0) {
+                rnd = Math.floor(Math.random() * cur);
+                cur--;
+                [array[cur], array[rnd]] = [array[rnd], array[cur]];
+            }
+            return array;
+        }
+
+        function rollAllWithAnimation() {
+            const board = document.getElementById('game-board');
+            if (board.children.length > 0) {
+                Array.from(board.children).forEach(c => c.classList.add('animate-shake'));
+                setTimeout(rollAll, 300);
+            } else {
+                rollAll();
+            }
+        }
+
+        function rollAll() {
+            const count = parseInt(document.getElementById('count-select').value);
+            const board = document.getElementById('game-board');
+            board.innerHTML = '';
+
+            let selection = [];
+            if (count >= 3) {
+                selection.push(shuffle(db.filter(x => x.cat === 'hero'))[0]);
+                selection.push(shuffle(db.filter(x => x.cat === 'item'))[0]);
+                selection.push(shuffle(db.filter(x => x.cat === 'place'))[0]);
+            }
+
+            const usedIds = selection.map(x => x.id);
+            const remaining = shuffle(db.filter(x => !usedIds.includes(x.id)));
+
+            while (selection.length < count) {
+                selection.push(remaining.pop());
+            }
+
+            currentItems = shuffle(selection);
+            currentItems.forEach((item, index) => createCardDOM(item, index));
+        }
+
+        function changeOne(index) {
+            const visibleIds = currentItems.map(x => x.id);
+            const available = db.filter(x => !visibleIds.includes(x.id));
+            if(available.length === 0) return;
+
+            const newItem = available[Math.floor(Math.random() * available.length)];
+            currentItems[index] = newItem;
+
+            const wrapper = document.createElement('div');
+            createCardDOM(newItem, index, wrapper);
+            document.getElementById('game-board').children[index].replaceWith(wrapper.firstElementChild);
+        }
+
+        function createCardDOM(item, index, parent = document.getElementById('game-board')) {
+            const card = document.createElement('div');
+            card.className = `card cat-${item.cat} animate-pop`;
+            card.onclick = () => speak(item.text, card);
+
+            const icon = document.createElement('div');
+            icon.className = 'card-icon';
+            icon.textContent = item.icon;
+
+            const text = document.createElement('div');
+            text.className = 'card-text';
+            text.textContent = item.text;
+
+            const btn = document.createElement('div');
+            btn.className = 'swap-btn';
+            btn.innerHTML = '↻';
+            btn.onclick = (e) => { e.stopPropagation(); changeOne(index); };
+
+            card.appendChild(btn);
+            card.appendChild(icon);
+            card.appendChild(text);
+            parent.appendChild(card);
+        }
+
+        window.onload = rollAll;
+    </script>
+</body>
+</html>
