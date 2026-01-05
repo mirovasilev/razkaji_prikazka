@@ -39,7 +39,7 @@
             font-size: 1.4rem;
             color: #ff5722;
             flex: 0 0 auto;
-            padding: 0 35px; /* Място за бутоните */
+            padding: 0 35px;
             text-align: center;
         }
 
@@ -312,7 +312,7 @@
             }
         };
 
-        // --- НОВА БАЗА ДАННИ (ПРЕВЕДЕНА) ---
+        // --- БАЗА ДАННИ ---
         const db = [
             // ГЕРОИ (1-18)
             { id: 1, text: { bg: "Момче", en: "Boy" }, icon: "👦", cat: "hero" },
@@ -376,17 +376,17 @@
         ];
 
         let currentItems = [];
+        let swapCounts = []; // Брояч колко пъти е сменена всяка карта
         let voices = [];
-        let currentLang = 'bg'; // 'bg' или 'en'
+        let currentLang = 'bg';
 
         // --- УПРАВЛЕНИЕ НА ЕЗИКА ---
         function toggleLanguage() {
             currentLang = currentLang === 'bg' ? 'en' : 'bg';
             document.querySelector('.lang-btn').textContent = currentLang.toUpperCase();
-
             updateUI();
 
-            // Обновяваме текста на картите в реално време, без да хвърляме нови
+            // Обновяваме текста на картите
             const cards = document.querySelectorAll('.card');
             cards.forEach((card, index) => {
                 const item = currentItems[index];
@@ -436,19 +436,14 @@
             }
             window.speechSynthesis.cancel();
 
-            // Избираме правилния език за говор
             const textToSpeak = textObj[currentLang];
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-            // Опитваме се да намерим специфичен глас за езика
             if (voices.length === 0) initVoices();
-
             const langCode = currentLang === 'bg' ? 'bg' : 'en';
             const specificVoice = voices.find(v => v.lang.toLowerCase().includes(langCode));
 
             if (specificVoice) utterance.voice = specificVoice;
-
-            // Fallback ако няма намерен глас, задаваме поне кода
             utterance.lang = currentLang === 'bg' ? 'bg-BG' : 'en-US';
 
             window.speechSynthesis.speak(utterance);
@@ -456,7 +451,7 @@
 
         // --- ЛОГИКА ЗА МОДАЛНИЯ ПРОЗОРЕЦ ---
         function openModal() {
-            updateUI(); // Уверяваме се, че е на правилния език
+            updateUI();
             document.getElementById('infoModal').style.display = 'flex';
         }
 
@@ -492,28 +487,73 @@
             const board = document.getElementById('game-board');
             board.innerHTML = '';
 
+            // 1. Подготвяме разбъркани тестета за всяка категория
+            const heroes = shuffle(db.filter(x => x.cat === 'hero'));
+            const items = shuffle(db.filter(x => x.cat === 'item'));
+            const places = shuffle(db.filter(x => x.cat === 'place'));
+
+            // 2. Определяме лимитите според схемата
+            let limits = { hero: 0, item: 0, place: 0 };
+            const cats = ['hero', 'item', 'place'];
+            const randomCat = () => cats[Math.floor(Math.random() * cats.length)];
+
+            switch (count) {
+                case 3: // 1-1-1
+                    limits = { hero: 1, item: 1, place: 1 };
+                    break;
+                case 4: // 2-1-1 (база 1-1-1 + 1 случайна)
+                    limits = { hero: 1, item: 1, place: 1 };
+                    limits[randomCat()]++;
+                    break;
+                case 5: // 1-2-2 (база 2-2-2 - 1 случайна)
+                    limits = { hero: 2, item: 2, place: 2 };
+                    limits[randomCat()]--;
+                    break;
+                case 6: // 2-2-2
+                    limits = { hero: 2, item: 2, place: 2 };
+                    break;
+                case 7: // 3-2-2 (база 2-2-2 + 1 случайна)
+                    limits = { hero: 2, item: 2, place: 2 };
+                    limits[randomCat()]++;
+                    break;
+                case 8: // 2-3-3 (база 3-3-3 - 1 случайна)
+                    limits = { hero: 3, item: 3, place: 3 };
+                    limits[randomCat()]--;
+                    break;
+                case 9: // 3-3-3
+                    limits = { hero: 3, item: 3, place: 3 };
+                    break;
+                default:
+                    limits = { hero: 1, item: 1, place: 1 };
+            }
+
+            // 3. Събираме картите
             let selection = [];
-            if (count >= 3) {
-                selection.push(shuffle(db.filter(x => x.cat === 'hero'))[0]);
-                selection.push(shuffle(db.filter(x => x.cat === 'item'))[0]);
-                selection.push(shuffle(db.filter(x => x.cat === 'place'))[0]);
-            }
+            selection.push(...heroes.slice(0, limits.hero));
+            selection.push(...items.slice(0, limits.item));
+            selection.push(...places.slice(0, limits.place));
 
-            const usedIds = selection.map(x => x.id);
-            const remaining = shuffle(db.filter(x => !usedIds.includes(x.id)));
-
-            while (selection.length < count) {
-                selection.push(remaining.pop());
-            }
-
+            // 4. Финално разбъркване и нулиране на броячите
             currentItems = shuffle(selection);
+            swapCounts = new Array(currentItems.length).fill(0);
+
             currentItems.forEach((item, index) => createCardDOM(item, index));
         }
 
         function changeOne(index) {
+            // Проверка за лимит (макс 2 смени)
+            if (swapCounts[index] >= 2) return;
+
+            const currentCard = currentItems[index];
             const visibleIds = currentItems.map(x => x.id);
-            const available = db.filter(x => !visibleIds.includes(x.id));
+
+            // Търсим карта САМО от същата категория
+            const available = db.filter(x => !visibleIds.includes(x.id) && x.cat === currentCard.cat);
+
             if(available.length === 0) return;
+
+            // Увеличаваме брояча
+            swapCounts[index]++;
 
             const newItem = available[Math.floor(Math.random() * available.length)];
             currentItems[index] = newItem;
@@ -534,20 +574,22 @@
 
             const text = document.createElement('div');
             text.className = 'card-text';
-            text.textContent = item.text[currentLang]; // Избираме правилния език
+            text.textContent = item.text[currentLang];
 
-            const btn = document.createElement('div');
-            btn.className = 'swap-btn';
-            btn.innerHTML = '↻';
-            btn.onclick = (e) => { e.stopPropagation(); changeOne(index); };
+            // Показваме бутона само ако не сме достигнали лимита (2)
+            if (swapCounts[index] < 2) {
+                const btn = document.createElement('div');
+                btn.className = 'swap-btn';
+                btn.innerHTML = '↻';
+                btn.onclick = (e) => { e.stopPropagation(); changeOne(index); };
+                card.appendChild(btn);
+            }
 
-            card.appendChild(btn);
             card.appendChild(icon);
             card.appendChild(text);
             parent.appendChild(card);
         }
 
-        // Първоначална инициализация
         window.onload = function() {
             updateUI();
             rollAll();
