@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="bg">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Приказни Зарчета</title>
+    <title>Story Dice / Приказни Зарчета</title>
     <style>
         :root {
             --bg-color: #f0f8ff;
@@ -20,9 +19,7 @@
             --cat-place-border: #F44336;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Verdana', sans-serif;
@@ -42,26 +39,40 @@
             font-size: 1.4rem;
             color: #ff5722;
             flex: 0 0 auto;
-            padding-right: 30px;
+            padding: 0 35px; /* Място за бутоните */
             text-align: center;
         }
 
-        /* --- БУТОН ЗА ИНФОРМАЦИЯ --- */
-        .info-btn {
+        /* --- БУТОНИ В ЪГЛИТЕ --- */
+        .top-btn {
             position: absolute;
             top: 10px;
-            right: 15px;
-            width: 30px;
-            height: 30px;
-            background: #2196F3;
-            color: white;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             border: none;
             font-weight: bold;
-            font-size: 1.2rem;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .lang-btn {
+            left: 15px;
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .info-btn {
+            right: 15px;
+            background: #2196F3;
+            color: white;
+            font-size: 1.2rem;
         }
 
         /* --- МОДАЛЕН ПРОЗОРЕЦ --- */
@@ -73,7 +84,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0,0,0,0.6);
             backdrop-filter: blur(3px);
             align-items: center;
             justify-content: center;
@@ -88,7 +99,7 @@
             max-width: 500px;
             max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             position: relative;
             animation: fadeIn 0.3s;
         }
@@ -108,12 +119,13 @@
         .modal h3 { color: #2196F3; margin-bottom: 5px; margin-top: 15px; }
         .modal p, .modal ul { font-size: 0.95rem; line-height: 1.5; color: #444; }
         .modal ul { padding-left: 20px; margin-top: 5px; }
+        .modal li { margin-bottom: 5px; }
 
         /* --- LEGEND & CONTROLS --- */
         .legend-container {
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 5px;
             font-size: 0.75rem;
             background: white;
@@ -128,17 +140,8 @@
         .dot.item { background: var(--cat-item-border); }
         .dot.place { background: var(--cat-place-border); }
 
-        .controls {
-            margin-bottom: 5px;
-            flex: 0 0 auto;
-        }
-
-        select {
-            font-size: 0.9rem;
-            padding: 2px 8px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
+        .controls { margin-bottom: 5px; flex: 0 0 auto; }
+        select { font-size: 0.9rem; padding: 2px 8px; border-radius: 6px; border: 1px solid #ccc; }
 
         /* --- GAME BOARD --- */
         .game-board {
@@ -151,19 +154,14 @@
             gap: 8px;
             padding: 5px 0;
             overflow-y: auto;
-            padding-bottom: 20px;
         }
 
-        @media (min-width: 500px) {
-            .game-board {
-                grid-template-columns: 1fr 1fr 1fr;
-            }
-        }
+        @media (min-width: 500px) { .game-board { grid-template-columns: 1fr 1fr 1fr; } }
 
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -173,58 +171,38 @@
             border-bottom: 4px solid #ccc;
             cursor: pointer;
             height: 100%;
-            min-height: 110px;
+            max-height: 25vh;
         }
 
         .card:active { transform: scale(0.97); }
-
         .card.cat-hero { background: var(--cat-hero-bg); border-color: var(--cat-hero-border); }
         .card.cat-item { background: var(--cat-item-bg); border-color: var(--cat-item-border); }
         .card.cat-place { background: var(--cat-place-bg); border-color: var(--cat-place-border); }
-
         .card.speaking { outline: 3px solid #2196F3; }
 
-        .card-icon {
-            font-size: 2.5rem;
-            line-height: 1;
-            margin-bottom: 2px;
-            margin-top: 10px;
-        }
-
+        .card-icon { font-size: 2.5rem; line-height: 1; margin-bottom: 5px; }
         .card-text {
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-align: center;
-            line-height: 1.1;
-            width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 0.9rem; font-weight: bold; text-align: center; line-height: 1.1;
+            width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        /* БУТОН ЗА СМЯНА - ГОРЕ ВДЯСНО */
         .swap-btn {
             position: absolute;
-            top: 4px;
-            right: 4px;
-            background: rgba(255, 255, 255, 0.9);
+            top: 2px;
+            right: 2px;
+            background: rgba(255,255,255,0.95);
             color: var(--refresh-btn);
             border: 2px solid var(--refresh-btn);
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            font-size: 1.2rem;
+            width: 36px;
+            height: 36px;
+            font-size: 1.4rem;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 5;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .swap-btn:active {
-            background: var(--refresh-btn);
-            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .main-action {
@@ -237,82 +215,245 @@
             font-size: 1.1rem;
             font-weight: bold;
             border-radius: 50px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
             width: 80%;
             max-width: 300px;
         }
 
-        @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-3px) rotate(-3deg); }
-            75% { transform: translateX(3px) rotate(3deg); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px) rotate(-3deg); } 75% { transform: translateX(3px) rotate(3deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
         .animate-pop { animation: popIn 0.3s ease-out; }
         .animate-shake { animation: shake 0.3s ease-in-out; }
     </style>
 </head>
-
 <body>
 
-    <button class="info-btn" onclick="openModal()">?</button>
+    <button class="top-btn lang-btn" onclick="toggleLanguage()">BG</button>
 
-    <h1>Разкажи приказка</h1>
+    <button class="top-btn info-btn" onclick="openModal()">?</button>
+
+    <h1 id="ui-title">Разкажи приказка</h1>
 
     <div class="legend-container">
-        <div class="legend-item"><span class="dot hero"></span> Герой</div>
-        <div class="legend-item"><span class="dot item"></span> Предмет</div>
-        <div class="legend-item"><span class="dot place"></span> Място/Обстоятелство</div>
+        <div class="legend-item"><span class="dot hero"></span> <span id="ui-hero">Герой</span></div>
+        <div class="legend-item"><span class="dot item"></span> <span id="ui-item">Предмет</span></div>
+        <div class="legend-item"><span class="dot place"></span> <span id="ui-place">Място</span></div>
     </div>
 
     <div class="controls">
-        <label for="count-select">Брой:</label>
+        <label for="count-select" id="ui-count">Брой:</label>
         <select id="count-select" onchange="rollAll()">
             <option value="3" selected>3</option>
             <option value="4">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
         </select>
     </div>
 
     <div id="game-board" class="game-board"></div>
 
     <button class="main-action" onclick="rollAllWithAnimation()">
-        СМЕНИ ВСИЧКИ
+        🎲 <span id="ui-roll">ХВЪРЛИ ВСИЧКИ</span>
     </button>
 
     <div id="infoModal" class="modal" onclick="closeModal(event)">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal(event, true)">&times;</span>
-            <h2>📖 Как се играе?</h2>
-            <p>1. Изберете броя на картите.</p>
-            <p>2. Натиснете <strong>"Смени всички"</strong>.</p>
-            <p>3. Използвайте картинките, за да съставите история. Започнете с <em>"Имало едно време..."</em></p>
-            <h3>💡 Съвети:</h3>
-            <ul>
-                <li>Натиснете картинката, за да чуете думата.</li>
-                <li>Натиснете малкото бутонче ↻, за да смените само тази картинка.</li>
-                <li><strong>Зелено</strong> = Герой, <strong>Жълто</strong> = Предмет, <strong>Червено</strong> = Място/Обстоятелство.</li>
-            </ul>
+            <div id="modal-text-content">
+                </div>
         </div>
     </div>
 
     <script>
+        // --- ДАННИ ЗА ПРЕВОД НА ИНТЕРФЕЙСА ---
+        const uiText = {
+            bg: {
+                title: "Разкажи приказка",
+                hero: "Герой", item: "Предмет", place: "Място",
+                count: "Брой:",
+                roll: "ХВЪРЛИ ВСИЧКИ",
+                modalTitle: "📖 Как се играе?",
+                modalSteps: [
+                    "1. Изберете броя на картите.",
+                    "2. Натиснете <strong>'Хвърли всички'</strong>.",
+                    "3. Използвайте картинките, за да съставите история. Започнете с <em>'Имало едно време...'</em>"
+                ],
+                modalTipsTitle: "💡 Съвети за родители:",
+                modalTips: [
+                    "<strong>Няма грешни отговори!</strong> Оставете въображението да работи.",
+                    "<strong>Задавайте въпроси:</strong> 'Защо?', 'Къде?', 'Какво стана после?'",
+                    "<strong>Редувайте се:</strong> Едно изречение от вас, едно от детето.",
+                    "<strong>Цветове:</strong> Зелено = Герой, Жълто = Предмет, Червено = Място/Чувство."
+                ]
+            },
+            en: {
+                title: "Story Dice",
+                hero: "Hero", item: "Item", place: "Place",
+                count: "Count:",
+                roll: "ROLL ALL",
+                modalTitle: "📖 How to play?",
+                modalSteps: [
+                    "1. Select the number of cards.",
+                    "2. Press <strong>'Roll All'</strong>.",
+                    "3. Use the pictures to create a story. Start with <em>'Once upon a time...'</em>"
+                ],
+                modalTipsTitle: "💡 Tips for parents:",
+                modalTips: [
+                    "<strong>No wrong answers!</strong> Let imagination run wild.",
+                    "<strong>Ask questions:</strong> 'Why?', 'Where?', 'What happened next?'",
+                    "<strong>Take turns:</strong> You say one sentence, the child says the next.",
+                    "<strong>Colors:</strong> Green = Hero, Yellow = Item, Red = Place/Mood."
+                ]
+            }
+        };
+
+        // --- НОВА БАЗА ДАННИ (ПРЕВЕДЕНА) ---
+        const db = [
+            // ГЕРОИ (1-18)
+            { id: 1, text: { bg: "Момче", en: "Boy" }, icon: "👦", cat: "hero" },
+            { id: 2, text: { bg: "Момиче", en: "Girl" }, icon: "👧", cat: "hero" },
+            { id: 3, text: { bg: "Бебе", en: "Baby" }, icon: "👶", cat: "hero" },
+            { id: 4, text: { bg: "Дядо", en: "Grandfather" }, icon: "👴", cat: "hero" },
+            { id: 5, text: { bg: "Супергерой", en: "Superhero" }, icon: "🦸", cat: "hero" },
+            { id: 6, text: { bg: "Пират", en: "Pirate" }, icon: "🏴‍☠️", cat: "hero" },
+            { id: 7, text: { bg: "Куче", en: "Dog" }, icon: "🐶", cat: "hero" },
+            { id: 8, text: { bg: "Котка", en: "Cat" }, icon: "🐱", cat: "hero" },
+            { id: 9, text: { bg: "Зайче", en: "Bunny" }, icon: "🐰", cat: "hero" },
+            { id: 10, text: { bg: "Птиче", en: "Bird" }, icon: "🐦", cat: "hero" },
+            { id: 11, text: { bg: "Конче", en: "Horse" }, icon: "🐴", cat: "hero" },
+            { id: 12, text: { bg: "Слонче", en: "Elephant" }, icon: "🐘", cat: "hero" },
+            { id: 13, text: { bg: "Дракон", en: "Dragon" }, icon: "🐲", cat: "hero" },
+            { id: 14, text: { bg: "Динозавър", en: "Dinosaur" }, icon: "🦖", cat: "hero" },
+            { id: 15, text: { bg: "Робот", en: "Robot" }, icon: "🤖", cat: "hero" },
+            { id: 16, text: { bg: "Извънземно", en: "Alien" }, icon: "👽", cat: "hero" },
+            { id: 17, text: { bg: "Фея", en: "Fairy" }, icon: "🧚", cat: "hero" },
+            { id: 18, text: { bg: "Чудовище", en: "Monster" }, icon: "👾", cat: "hero" },
+
+            // ПРЕДМЕТИ (19-36)
+            { id: 19, text: { bg: "Топка", en: "Ball" }, icon: "⚽", cat: "item" },
+            { id: 20, text: { bg: "Мече", en: "Teddy Bear" }, icon: "🧸", cat: "item" },
+            { id: 21, text: { bg: "Количка", en: "Car" }, icon: "🚗", cat: "item" },
+            { id: 22, text: { bg: "Корона", en: "Crown" }, icon: "👑", cat: "item" },
+            { id: 23, text: { bg: "Балон", en: "Balloon" }, icon: "🎈", cat: "item" },
+            { id: 24, text: { bg: "Книга", en: "Book" }, icon: "📖", cat: "item" },
+            { id: 25, text: { bg: "Вълшебна пръчка", en: "Magic Wand" }, icon: "🪄", cat: "item" },
+            { id: 26, text: { bg: "Лъжица", en: "Spoon" }, icon: "🥄", cat: "item" },
+            { id: 27, text: { bg: "Обувки", en: "Shoes" }, icon: "👟", cat: "item" },
+            { id: 28, text: { bg: "Ключ", en: "Key" }, icon: "🔑", cat: "item" },
+            { id: 29, text: { bg: "Фенерче", en: "Flashlight" }, icon: "🔦", cat: "item" },
+            { id: 30, text: { bg: "Подарък", en: "Gift" }, icon: "🎁", cat: "item" },
+            { id: 31, text: { bg: "Колело", en: "Bicycle" }, icon: "🚲", cat: "item" },
+            { id: 32, text: { bg: "Ракета", en: "Rocket" }, icon: "🚀", cat: "item" },
+            { id: 33, text: { bg: "Лодка", en: "Boat" }, icon: "⛵", cat: "item" },
+            { id: 34, text: { bg: "Влак", en: "Train" }, icon: "🚂", cat: "item" },
+            { id: 35, text: { bg: "Торта", en: "Cake" }, icon: "🎂", cat: "item" },
+            { id: 36, text: { bg: "Сладолед", en: "Ice Cream" }, icon: "🍦", cat: "item" },
+
+            // СРЕДА И ЕМОЦИИ (37-54)
+            { id: 37, text: { bg: "Къща", en: "House" }, icon: "🏠", cat: "place" },
+            { id: 38, text: { bg: "Училище", en: "School" }, icon: "🏫", cat: "place" },
+            { id: 39, text: { bg: "Пързалка", en: "Slide" }, icon: "🛝", cat: "place" },
+            { id: 40, text: { bg: "Гора", en: "Forest" }, icon: "🌲", cat: "place" },
+            { id: 41, text: { bg: "Плаж", en: "Beach" }, icon: "🏖️", cat: "place" },
+            { id: 42, text: { bg: "Космос", en: "Space" }, icon: "🪐", cat: "place" },
+            { id: 43, text: { bg: "Слънце", en: "Sun" }, icon: "☀️", cat: "place" },
+            { id: 44, text: { bg: "Луна", en: "Moon" }, icon: "🌙", cat: "place" },
+            { id: 45, text: { bg: "Дъга", en: "Rainbow" }, icon: "🌈", cat: "place" },
+            { id: 46, text: { bg: "Дъжд", en: "Rain" }, icon: "🌧️", cat: "place" },
+            { id: 47, text: { bg: "Сняг", en: "Snow" }, icon: "❄️", cat: "place" },
+            { id: 48, text: { bg: "Цвете", en: "Flower" }, icon: "🌸", cat: "place" },
+            { id: 49, text: { bg: "Замък", en: "Castle" }, icon: "🏰", cat: "place" },
+            { id: 50, text: { bg: "Остров", en: "Island" }, icon: "🏝️", cat: "place" },
+            { id: 51, text: { bg: "Легло", en: "Bed" }, icon: "🛏️", cat: "place" },
+            { id: 52, text: { bg: "Радост", en: "Joy" }, icon: "😊", cat: "place" },
+            { id: 53, text: { bg: "Тъга", en: "Sadness" }, icon: "😢", cat: "place" },
+            { id: 54, text: { bg: "Сърце", en: "Heart" }, icon: "❤️", cat: "place" }
+        ];
+
+        let currentItems = [];
+        let voices = [];
+        let currentLang = 'bg'; // 'bg' или 'en'
+
+        // --- УПРАВЛЕНИЕ НА ЕЗИКА ---
+        function toggleLanguage() {
+            currentLang = currentLang === 'bg' ? 'en' : 'bg';
+            document.querySelector('.lang-btn').textContent = currentLang.toUpperCase();
+
+            updateUI();
+
+            // Обновяваме текста на картите в реално време, без да хвърляме нови
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                const item = currentItems[index];
+                if (item) {
+                    card.querySelector('.card-text').textContent = item.text[currentLang];
+                }
+            });
+        }
+
+        function updateUI() {
+            const t = uiText[currentLang];
+            document.getElementById('ui-title').textContent = t.title;
+            document.getElementById('ui-hero').textContent = t.hero;
+            document.getElementById('ui-item').textContent = t.item;
+            document.getElementById('ui-place').textContent = t.place;
+            document.getElementById('ui-count').textContent = t.count;
+            document.getElementById('ui-roll').textContent = t.roll;
+
+            // Обновяване на модалния текст
+            const modalContent = document.getElementById('modal-text-content');
+            modalContent.innerHTML = `
+                <h2>${t.modalTitle}</h2>
+                ${t.modalSteps.map(s => `<p>${s}</p>`).join('')}
+                <h3>${t.modalTipsTitle}</h3>
+                <ul>
+                    ${t.modalTips.map(tip => `<li>${tip}</li>`).join('')}
+                </ul>
+                <p style="text-align:center; margin-top:15px; font-size:0.8rem; color:#888;">
+                    ${currentLang === 'bg' ? 'Приятна игра!' : 'Have fun!'}
+                </p>
+            `;
+        }
+
+        // --- ГОВОР И ЗВУК ---
+        function initVoices() { voices = window.speechSynthesis.getVoices(); }
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = initVoices;
+            initVoices();
+        }
+
+        function speak(textObj, cardElement) {
+            if (!('speechSynthesis' in window)) return;
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('speaking'));
+            if(cardElement) {
+                cardElement.classList.add('speaking');
+                setTimeout(() => cardElement.classList.remove('speaking'), 1000);
+            }
+            window.speechSynthesis.cancel();
+
+            // Избираме правилния език за говор
+            const textToSpeak = textObj[currentLang];
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+            // Опитваме се да намерим специфичен глас за езика
+            if (voices.length === 0) initVoices();
+
+            const langCode = currentLang === 'bg' ? 'bg' : 'en';
+            const specificVoice = voices.find(v => v.lang.toLowerCase().includes(langCode));
+
+            if (specificVoice) utterance.voice = specificVoice;
+
+            // Fallback ако няма намерен глас, задаваме поне кода
+            utterance.lang = currentLang === 'bg' ? 'bg-BG' : 'en-US';
+
+            window.speechSynthesis.speak(utterance);
+        }
+
         // --- ЛОГИКА ЗА МОДАЛНИЯ ПРОЗОРЕЦ ---
         function openModal() {
+            updateUI(); // Уверяваме се, че е на правилния език
             document.getElementById('infoModal').style.display = 'flex';
         }
 
@@ -322,93 +463,7 @@
             }
         }
 
-        // --- ДАННИ ---
-        const db = [
-            // ГЕРОИ (18)
-            { id: 1, text: "Момче", icon: "👦", cat: "hero" },
-            { id: 2, text: "Момиче", icon: "👧", cat: "hero" },
-            { id: 3, text: "Бебе", icon: "👶", cat: "hero" },
-            { id: 4, text: "Дядо", icon: "👴", cat: "hero" },
-            { id: 5, text: "Супергерой", icon: "🦸", cat: "hero" },
-            { id: 6, text: "Пират", icon: "🏴‍☠️", cat: "hero" },
-            { id: 7, text: "Куче", icon: "🐶", cat: "hero" },
-            { id: 8, text: "Котка", icon: "🐱", cat: "hero" },
-            { id: 9, text: "Зайче", icon: "🐰", cat: "hero" },
-            { id: 10, text: "Птиче", icon: "🐦", cat: "hero" },
-            { id: 11, text: "Конче", icon: "🐴", cat: "hero" },
-            { id: 12, text: "Слонче", icon: "🐘", cat: "hero" },
-            { id: 13, text: "Дракон", icon: "🐲", cat: "hero" },
-            { id: 14, text: "Динозавър", icon: "🦖", cat: "hero" },
-            { id: 15, text: "Робот", icon: "🤖", cat: "hero" },
-            { id: 16, text: "Извънземно", icon: "👽", cat: "hero" },
-            { id: 17, text: "Фея", icon: "🧚", cat: "hero" },
-            { id: 18, text: "Чудовище", icon: "👾", cat: "hero" },
-
-            // ПРЕДМЕТИ (18)
-            { id: 19, text: "Топка", icon: "⚽", cat: "item" },
-            { id: 20, text: "Мече", icon: "🧸", cat: "item" },
-            { id: 21, text: "Количка", icon: "🚗", cat: "item" },
-            { id: 22, text: "Корона", icon: "👑", cat: "item" },
-            { id: 23, text: "Балон", icon: "🎈", cat: "item" },
-            { id: 24, text: "Книга", icon: "📖", cat: "item" },
-            { id: 25, text: "Вълшебна пръчка", icon: "🪄", cat: "item" },
-            { id: 26, text: "Лъжица", icon: "🥄", cat: "item" },
-            { id: 27, text: "Обувки", icon: "👟", cat: "item" },
-            { id: 28, text: "Ключ", icon: "🔑", cat: "item" },
-            { id: 29, text: "Фенерче", icon: "🔦", cat: "item" },
-            { id: 30, text: "Подарък", icon: "🎁", cat: "item" },
-            { id: 31, text: "Колело", icon: "🚲", cat: "item" },
-            { id: 32, text: "Ракета", icon: "🚀", cat: "item" },
-            { id: 33, text: "Лодка", icon: "⛵", cat: "item" },
-            { id: 34, text: "Влак", icon: "🚂", cat: "item" },
-            { id: 35, text: "Торта", icon: "🎂", cat: "item" },
-            { id: 36, text: "Сладолед", icon: "🍦", cat: "item" },
-
-            // СРЕДА И ЕМОЦИИ (18)
-            { id: 37, text: "Къща", icon: "🏠", cat: "place" },
-            { id: 38, text: "Училище", icon: "🏫", cat: "place" },
-            { id: 39, text: "Пързалка", icon: "🛝", cat: "place" },
-            { id: 40, text: "Гора", icon: "🌲", cat: "place" },
-            { id: 41, text: "Плаж", icon: "🏖️", cat: "place" },
-            { id: 42, text: "Космос", icon: "🪐", cat: "place" },
-            { id: 43, text: "Слънце", icon: "☀️", cat: "place" },
-            { id: 44, text: "Луна", icon: "🌙", cat: "place" },
-            { id: 45, text: "Дъга", icon: "🌈", cat: "place" },
-            { id: 46, text: "Дъжд", icon: "🌧️", cat: "place" },
-            { id: 47, text: "Сняг", icon: "❄️", cat: "place" },
-            { id: 48, text: "Цвете", icon: "🌸", cat: "place" },
-            { id: 49, text: "Замък", icon: "🏰", cat: "place" },
-            { id: 50, text: "Остров", icon: "🏝️", cat: "place" },
-            { id: 51, text: "Легло", icon: "🛏️", cat: "place" },
-            { id: 52, text: "Радост", icon: "😊", cat: "place" },
-            { id: 53, text: "Тъга", icon: "😢", cat: "place" },
-            { id: 54, text: "Сърце", icon: "❤️", cat: "place" }
-        ];
-
-        let currentItems = [];
-        let voices = [];
-
-        function initVoices() { voices = window.speechSynthesis.getVoices(); }
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = initVoices;
-            initVoices();
-        }
-
-        function speak(text, cardElement) {
-            if (!('speechSynthesis' in window)) return;
-            document.querySelectorAll('.card').forEach(c => c.classList.remove('speaking'));
-            if (cardElement) {
-                cardElement.classList.add('speaking');
-                setTimeout(() => cardElement.classList.remove('speaking'), 1000);
-            }
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            const bgVoice = voices.find(v => v.lang.includes('bg'));
-            if (bgVoice) utterance.voice = bgVoice;
-            utterance.lang = 'bg-BG';
-            window.speechSynthesis.speak(utterance);
-        }
-
+        // --- ИГРОВА ЛОГИКА ---
         function shuffle(array) {
             let cur = array.length, rnd;
             while (cur != 0) {
@@ -434,57 +489,28 @@
             const board = document.getElementById('game-board');
             board.innerHTML = '';
 
-            // --- НОВА ЛОГИКА ЗА БАЛАНС ---
-            // Дефинираме схемите за разпределение на бройките
-            let counts = []; // Ще съхранява 3 числа, напр. [2, 1, 1] за 4 карти
-
-            switch(count) {
-                case 3: counts = [1, 1, 1]; break;
-                case 4: counts = [2, 1, 1]; break;
-                case 5: counts = [1, 2, 2]; break; // 1 уникален, другите по 2
-                case 6: counts = [2, 2, 2]; break;
-                case 7: counts = [3, 2, 2]; break;
-                case 8: counts = [2, 3, 3]; break; // 2 от един цвят, другите по 3
-                case 9: counts = [3, 3, 3]; break;
-                default: counts = [1, 1, 1];
-            }
-
-            // Категориите
-            let categories = ['hero', 'item', 'place'];
-
-            // Разбъркваме категориите, за да не е винаги "hero" този с най-много/най-малко карти
-            categories = shuffle(categories);
-
             let selection = [];
-
-            // За всяка от 3-те категории теглим нужния брой карти
-            for (let i = 0; i < 3; i++) {
-                const catName = categories[i];
-                const numNeeded = counts[i];
-
-                if (numNeeded > 0) {
-                    const pool = db.filter(x => x.cat === catName);
-                    const shuffledPool = shuffle([...pool]); // Копираме и разбъркваме
-                    const chosen = shuffledPool.slice(0, numNeeded);
-                    selection = selection.concat(chosen);
-                }
+            if (count >= 3) {
+                selection.push(shuffle(db.filter(x => x.cat === 'hero'))[0]);
+                selection.push(shuffle(db.filter(x => x.cat === 'item'))[0]);
+                selection.push(shuffle(db.filter(x => x.cat === 'place'))[0]);
             }
 
-            // Накрая разбъркваме целия избор, за да не са подредени по цвят
-            currentItems = shuffle(selection);
+            const usedIds = selection.map(x => x.id);
+            const remaining = shuffle(db.filter(x => !usedIds.includes(x.id)));
 
+            while (selection.length < count) {
+                selection.push(remaining.pop());
+            }
+
+            currentItems = shuffle(selection);
             currentItems.forEach((item, index) => createCardDOM(item, index));
         }
 
         function changeOne(index) {
-            const currentItem = currentItems[index];
-            const currentCat = currentItem.cat;
-
-            const catPool = db.filter(x => x.cat === currentCat);
             const visibleIds = currentItems.map(x => x.id);
-            const available = catPool.filter(x => !visibleIds.includes(x.id));
-
-            if (available.length === 0) return;
+            const available = db.filter(x => !visibleIds.includes(x.id));
+            if(available.length === 0) return;
 
             const newItem = available[Math.floor(Math.random() * available.length)];
             currentItems[index] = newItem;
@@ -505,7 +531,7 @@
 
             const text = document.createElement('div');
             text.className = 'card-text';
-            text.textContent = item.text;
+            text.textContent = item.text[currentLang]; // Избираме правилния език
 
             const btn = document.createElement('div');
             btn.className = 'swap-btn';
@@ -518,8 +544,11 @@
             parent.appendChild(card);
         }
 
-        window.onload = rollAll;
+        // Първоначална инициализация
+        window.onload = function() {
+            updateUI();
+            rollAll();
+        };
     </script>
 </body>
-
 </html>
