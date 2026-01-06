@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Story Dice Ultimate</title>
+    <title>Създай приказка / Create a Tale</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
-            /* Живи цветове за светъл режим */
             --bg-gradient-1: #e0f7fa;
             --bg-gradient-2: #e1bee7;
             --bg-gradient-3: #fff9c4;
-
-            --text-color: #000000;
+            --text-color: #2c3e50;
             --card-bg: #ffffff;
             --primary-btn: #FF9800;
+            --primary-btn-hover: #F57C00;
             --secondary-btn: #4CAF50;
             --refresh-btn: #2196F3;
             --lock-btn: #E91E63;
@@ -27,17 +27,9 @@
             --cat-action-bg: #e3f2fd; --cat-action-border: #2196F3;
         }
 
-        /* --- НОЩЕН РЕЖИМ --- */
         body.dark-mode {
-            --bg-gradient-1: #0f2027;
-            --bg-gradient-2: #203a43;
-            --bg-gradient-3: #2c5364;
-
-            --text-color: #e0e0e0;
-            --card-bg: #1e1e1e;
-            --modal-bg: #1e1e1e;
-            --modal-text: #ccc;
-
+            --bg-gradient-1: #0f2027; --bg-gradient-2: #203a43; --bg-gradient-3: #2c5364;
+            --text-color: #e0e0e0; --card-bg: #1e1e1e; --modal-bg: #1e1e1e; --modal-text: #ccc;
             --cat-hero-bg: #1b3320; --cat-hero-border: #2e7d32;
             --cat-item-bg: #332f00; --cat-item-border: #fbc02d;
             --cat-place-bg: #3e1a1a; --cat-place-border: #d32f2f;
@@ -47,165 +39,173 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Verdana', sans-serif;
+            font-family: 'Nunito', sans-serif;
             background: linear-gradient(-45deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
             color: var(--text-color);
-            margin: 0; padding: 10px;
-            height: 100dvh;
+            margin: 0; padding: 10px 5px; 
+            height: 100dvh; width: 100vw;
             display: flex; flex-direction: column; align-items: center;
-            overflow: hidden; position: relative;
-            transition: color 0.3s;
+            overflow: hidden; 
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        h1 {
-            margin: 0 0 5px 0; font-size: 1.3rem; color: #ff5722;
-            flex: 0 0 auto; padding: 0 40px; text-align: center;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        /* --- HEADER --- */
+        h1 { 
+            margin: 2px 0 5px 0; 
+            font-size: 1.2rem; 
+            font-weight: 900; color: #ff5722; 
+            text-align: center; flex: 0 0 auto;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+            z-index: 10;
+            padding: 0 50px; 
         }
+        body.dark-mode h1 { text-shadow: 1px 1px 0px rgba(0,0,0,0.5); }
 
-        /* --- БУТОНИ В ЪГЛИТЕ --- */
         .top-btn {
-            position: absolute; top: 10px; width: 32px; height: 32px;
+            position: absolute; top: 8px; width: 32px; height: 32px;
             border-radius: 50%; border: none; font-weight: bold; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 200;
-            display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
-            transition: transform 0.1s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); z-index: 200;
+            display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
         }
-        .top-btn:active { transform: scale(0.9); }
-        .lang-btn { left: 10px; background: white; color: #333; border: 2px solid #333; }
-        .dark-btn { left: 50px; background: #333; color: #fff; border: 2px solid #555; }
+        .lang-btn { left: 8px; background: white; color: #333; border: 2px solid #333; }
+        .dark-btn { left: 45px; background: #333; color: #fff; border: 2px solid #555; }
         body.dark-mode .dark-btn { background: #fff; color: #333; }
-        .info-btn { right: 10px; background: var(--refresh-btn); color: white; font-size: 1.2rem; }
+        .info-btn { right: 8px; background: var(--refresh-btn); color: white; font-size: 1.1rem; }
 
         /* --- LEGEND & CONTROLS --- */
         .legend-container {
             display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
-            margin-bottom: 5px; font-size: 0.75rem;
-            background: var(--card-bg);
-            padding: 5px 10px; border-radius: 15px; flex: 0 0 auto;
+            margin-bottom: 5px; font-size: 0.7rem; 
+            background: var(--card-bg); 
+            padding: 4px 10px; border-radius: 15px; flex: 0 0 auto;
             color: var(--text-color);
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-weight: 700;
         }
-        .legend-item { display: flex; align-items: center; gap: 4px; font-weight: bold; white-space: nowrap; transition: opacity 0.3s; }
+        .legend-item { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
         .legend-item.dimmed { opacity: 0.3; text-decoration: line-through; }
-
         .dot { width: 8px; height: 8px; border-radius: 50%; }
         .dot.hero { background: var(--cat-hero-border); }
         .dot.item { background: var(--cat-item-border); }
         .dot.place { background: var(--cat-place-border); }
         .dot.action { background: var(--cat-action-border); }
 
-        .controls { margin-bottom: 5px; flex: 0 0 auto; z-index: 10; display: flex; gap: 10px; }
-        select {
-            font-size: 1rem; padding: 4px 8px; border-radius: 8px;
-            border: 2px solid var(--primary-btn);
-            background: var(--card-bg);
-            color: var(--text-color);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        .controls { 
+            margin-bottom: 5px; flex: 0 0 auto; z-index: 10; 
+            display: flex; gap: 8px; justify-content: center;
+        }
+        select { 
+            font-size: 0.9rem; padding: 4px 8px; border-radius: 10px; 
+            border: 2px solid var(--primary-btn); 
+            background: var(--card-bg); color: var(--text-color);
+            font-family: 'Nunito', sans-serif; font-weight: 700; outline: none;
         }
 
         /* --- GAME BOARD --- */
         .game-board {
-            flex: 1 1 auto; width: 100%; max-width: 900px;
-            display: grid; grid-template-columns: repeat(2, 1fr);
-            grid-auto-rows: minmax(120px, 1fr); gap: 8px;
-            padding: 5px; overflow-y: auto;
-            scrollbar-width: none;
+            flex: 1 1 auto; 
+            width: 100%; max-width: 600px;
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            grid-auto-rows: 1fr; 
+            gap: 6px; 
+            padding: 2px;
+            overflow: hidden; 
+            min-height: 0; 
         }
-        .game-board::-webkit-scrollbar { display: none; }
-
-        @media (min-width: 500px) { .game-board { grid-template-columns: repeat(3, 1fr); } }
-        @media (min-width: 768px) { .game-board { grid-template-columns: repeat(4, 1fr); } }
 
         .card {
-            background-color: var(--card-bg); border-radius: 16px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: var(--card-bg); border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 8px; position: relative;
-            border-bottom: 5px solid #ccc; cursor: pointer;
-            height: 100%; min-height: 0;
+            padding: 4px; position: relative;
+            border-bottom: 3px solid rgba(0,0,0,0.1); cursor: pointer;
+            height: 100%; width: 100%;
             transition: transform 0.1s;
         }
-        .card:active { transform: scale(0.98); }
+        .card:active { transform: scale(0.96); }
 
-        .card.cat-hero { background: var(--cat-hero-bg); border-color: var(--cat-hero-border); }
-        .card.cat-item { background: var(--cat-item-bg); border-color: var(--cat-item-border); }
-        .card.cat-place { background: var(--cat-place-bg); border-color: var(--cat-place-border); }
-        .card.cat-action { background: var(--cat-action-bg); border-color: var(--cat-action-border); }
-
+        .card.cat-hero { background: var(--cat-hero-bg); color: #1b5e20; }
+        .card.cat-item { background: var(--cat-item-bg); color: #f57f17; }
+        .card.cat-place { background: var(--cat-place-bg); color: #b71c1c; }
+        .card.cat-action { background: var(--cat-action-bg); color: #0d47a1; }
         .card.speaking { outline: 3px solid var(--refresh-btn); }
-        .card.locked { opacity: 0.9; border-style: dashed; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px); }
+        .card.locked { opacity: 0.85; border-style: dashed; border-color: #888; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px); }
 
-        .card-icon { font-size: 3rem; line-height: 1; margin-bottom: 8px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1)); }
-        .card-text {
-            font-size: 0.95rem; font-weight: 800; text-align: center; line-height: 1.1;
-            width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            color: var(--text-color);
+        .card-icon { 
+            font-size: 8vmin; 
+            line-height: 1; margin-bottom: 5px; 
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1)); 
+        }
+        .card-text { 
+            font-size: 3.5vmin; 
+            font-weight: 800; text-align: center; line-height: 1.1; 
+            width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+            color: inherit;
+        }
+        body.dark-mode .card-text { color: var(--text-color); }
+
+        @media (min-width: 600px) {
+            .card-icon { font-size: 3rem; }
+            .card-text { font-size: 1rem; }
         }
 
         /* --- БУТОНИ ВЪРХУ КАРТАТА --- */
         .card-btn {
-            position: absolute; width: 32px; height: 32px; border-radius: 50%;
+            position: absolute; width: 28px; height: 28px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            z-index: 5; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-            font-size: 1.2rem; background: rgba(255,255,255,0.9);
-            transition: all 0.2s;
+            z-index: 5; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            font-size: 0.9rem; background: rgba(255,255,255,0.9);
         }
         body.dark-mode .card-btn { background: rgba(50,50,50,0.9); }
-        .card-btn:active { transform: scale(0.9); }
-
-        .swap-btn { top: 4px; right: 4px; color: var(--refresh-btn); border: 2px solid var(--refresh-btn); flex-direction: row; gap: 2px; padding: 0 4px; width: auto; min-width: 32px; }
+        
+        .swap-btn { top: 4px; right: 4px; color: var(--refresh-btn); border: 2px solid var(--refresh-btn); flex-direction: row; gap: 2px; padding: 0 2px; width: auto; min-width: 28px; }
         .swap-dots { display: flex; gap: 2px; }
-        .swap-dot { display: inline-block; width: 6px; height: 6px; background: var(--refresh-btn); border-radius: 50%; }
-
-        .lock-btn { top: 4px; left: 4px; color: #ccc; border: 2px solid #ccc; font-size: 1rem; }
+        .swap-dot { display: inline-block; width: 5px; height: 5px; background: var(--refresh-btn); border-radius: 50%; }
+        .lock-btn { top: 4px; left: 4px; color: #ccc; border: 2px solid #ccc; }
         .card.locked .lock-btn { color: var(--lock-btn); border-color: var(--lock-btn); background: var(--card-bg); }
 
         /* --- ДОЛНИ БУТОНИ --- */
-        .actions-container { flex: 0 0 auto; margin-top: 10px; display: flex; gap: 10px; width: 95%; max-width: 400px; justify-content: center; }
-        .action-btn {
-            border: none; padding: 12px; font-size: 1rem; font-weight: bold;
-            border-radius: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            color: white; flex: 1;
+        .actions-container { 
+            flex: 0 0 auto; margin-top: 5px; margin-bottom: 2px;
+            display: flex; gap: 10px; width: 98%; max-width: 500px; justify-content: center; 
         }
-        .roll-btn { background-color: var(--primary-btn); flex: 2; font-size: 1.1rem; }
-        .save-btn { background-color: var(--secondary-btn); flex: 1; }
+        .action-btn {
+            border: none; padding: 10px; font-size: 1rem; font-weight: 900;
+            border-radius: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+            color: white; flex: 1; font-family: 'Nunito', sans-serif;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .action-btn:active { transform: translateY(2px); }
+        .roll-btn { background: linear-gradient(135deg, var(--primary-btn), var(--primary-btn-hover)); flex: 2; animation: pulseBtn 2s infinite; }
+        .save-btn { background-color: var(--secondary-btn); flex: 1; font-size: 0.8rem; }
+
+        @keyframes pulseBtn { 0% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7); } 70% { box-shadow: 0 0 0 8px rgba(255, 152, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); } }
 
         /* --- МОДАЛ --- */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(3px); align-items: center; justify-content: center; }
-        .modal-content {
-            background-color: var(--modal-bg); color: var(--modal-text);
-            margin: 20px; padding: 25px; border-radius: 20px;
-            width: 90%; max-width: 500px; max-height: 85vh;
-            overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            position: relative; animation: fadeIn 0.3s;
-        }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
+        .modal-content { background-color: var(--modal-bg); color: var(--modal-text); margin: 20px; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 2rem; font-weight: bold; color: #aaa; cursor: pointer; line-height: 1; }
-        .modal h2 { color: #ff5722; margin-top: 0; } .modal h3 { color: #2196F3; margin: 15px 0 5px; }
-        .modal p, .modal li { font-size: 0.95rem; line-height: 1.6; margin-bottom: 8px; }
-        .modal ul { padding-left: 25px; margin-top: 5px; }
-
+        .modal h2 { color: #ff5722; margin-top: 0; }
+        
+        .animate-pop { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .animate-shake { animation: shake 0.4s ease-in-out; }
         @keyframes popIn { 0% { transform: scale(0.6); opacity: 0; } 60% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px) rotate(-4deg); } 75% { transform: translateX(4px) rotate(4deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-pop { animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .animate-shake { animation: shake 0.4s ease-in-out; }
 
-        /* --- ПОПРАВКА ЗА ЛАПТОП --- */
-        @media (min-width: 1024px) {
-            .game-board { align-content: center; justify-items: center; grid-auto-rows: min-content; gap: 15px; }
-            .card { height: auto; aspect-ratio: 9 / 14; width: 100%; max-width: 220px; margin: 0 auto; }
-            .card-icon { font-size: 4rem; margin-bottom: 15px; }
-            .card-text { font-size: 1.1rem; }
+        /* --- DESKTOP FIX --- */
+        @media (min-width: 768px) {
+            .game-board { 
+                grid-template-columns: repeat(4, 1fr) !important; 
+                grid-auto-rows: min-content; 
+                gap: 15px; padding: 15px;
+            }
+            .card { aspect-ratio: 9/13; height: auto; }
+            h1 { font-size: 1.8rem; margin: 10px 0; }
         }
     </style>
 </head>
@@ -215,7 +215,7 @@
     <button class="top-btn dark-btn" onclick="toggleDarkMode()">🌙</button>
     <button class="top-btn info-btn" onclick="openModal()">?</button>
 
-    <h1 id="ui-title">Разкажи приказка</h1>
+    <h1 id="ui-title">Създай приказка</h1>
 
     <div class="legend-container">
         <div class="legend-item" id="leg-hero"><span class="dot hero"></span> <span id="ui-hero">Герой</span></div>
@@ -226,11 +226,11 @@
 
     <div class="controls">
         <select id="level-select" onchange="rollAll()">
-            <option value="beginner" id="opt-beginner">Начинаещ (3)</option>
-            <option value="advanced" id="opt-advanced">Напреднал (4)</option>
-            <option value="expert" id="opt-expert">Експерт (Chaos)</option>
+            <option value="beginner" id="opt-beginner">Начинаещ</option>
+            <option value="advanced" id="opt-advanced">Напреднал</option>
+            <option value="expert" id="opt-expert">Експерт</option>
         </select>
-
+        
         <select id="count-select" onchange="rollAll()">
             <option value="3">3</option>
             <option value="4" selected>4</option>
@@ -249,7 +249,7 @@
             📸 <span id="ui-save">Запази</span>
         </button>
         <button class="action-btn roll-btn" onclick="rollAllWithAnimation()">
-            🎲 <span id="ui-roll">ХВЪРЛИ ВСИЧКИ</span>
+            ✨ <span id="ui-roll">НОВА ИСТОРИЯ</span>
         </button>
     </div>
 
@@ -264,38 +264,29 @@
         // --- ДАННИ ---
         const uiText = {
             bg: {
-                title: "Разкажи приказка",
+                title: "Създай приказка",
                 hero: "Герой", item: "Предмет", place: "Място", action: "Действие",
                 optBeginner: "Начинаещ (3)", optAdvanced: "Напреднал (4)", optExpert: "Експерт (Микс)",
-                save: "Запази", roll: "ХВЪРЛИ",
+                save: "ЗАПАЗИ", roll: "НОВА ИСТОРИЯ",
                 modalTitle: "📖 Как се играе?",
-                modalSteps: ["1. Изберете ниво (Начинаещ/Напреднал).", "2. Изберете брой карти.", "3. Хвърлете и съчинете история!"],
+                modalSteps: ["1. Изберете ниво.", "2. Изберете брой карти.", "3. Натиснете 'Нова История'!"],
                 modalTipsTitle: "💡 Нива:",
-                modalTips: [
-                    "<strong>Начинаещ:</strong> Само Герой, Предмет и Място (Лесно).",
-                    "<strong>Напреднал:</strong> Включва и Действие (За изречения).",
-                    "<strong>Експерт:</strong> Пълен хаос за креативност."
-                ]
+                modalTips: ["<strong>Начинаещ:</strong> Лесно.", "<strong>Напреднал:</strong> Изречения.", "<strong>Експерт:</strong> Хаос."]
             },
             en: {
-                title: "Story Dice",
+                title: "Create a Tale",
                 hero: "Hero", item: "Item", place: "Place", action: "Action",
                 optBeginner: "Beginner (3)", optAdvanced: "Advanced (4)", optExpert: "Expert (Mix)",
-                save: "Save", roll: "ROLL",
+                save: "SAVE", roll: "NEW STORY",
                 modalTitle: "📖 How to play?",
-                modalSteps: ["1. Select level (Beginner/Advanced).", "2. Select count.", "3. Roll and tell a story!"],
+                modalSteps: ["1. Select level.", "2. Select count.", "3. Click 'New Story'!"],
                 modalTipsTitle: "💡 Levels:",
-                modalTips: [
-                    "<strong>Beginner:</strong> Hero, Item, Place (Easy).",
-                    "<strong>Advanced:</strong> Includes Action (For sentences).",
-                    "<strong>Expert:</strong> Full random mix."
-                ]
+                modalTips: ["<strong>Beginner:</strong> Easy.", "<strong>Advanced:</strong> Sentences.", "<strong>Expert:</strong> Chaos."]
             }
         };
 
-        // --- БАЗА ДАННИ (100 КАРТИ) ---
         const db = [
-            // HEROES (1-25)
+            // HEROES
             { id: 1, text: { bg: "Момче", en: "Boy" }, icon: "👦", cat: "hero" },
             { id: 2, text: { bg: "Момиче", en: "Girl" }, icon: "👧", cat: "hero" },
             { id: 3, text: { bg: "Бебе", en: "Baby" }, icon: "👶", cat: "hero" },
@@ -321,8 +312,7 @@
             { id: 77, text: { bg: "Учен", en: "Scientist" }, icon: "🧑‍🔬", cat: "hero" },
             { id: 78, text: { bg: "Призрак", en: "Ghost" }, icon: "👻", cat: "hero" },
             { id: 79, text: { bg: "Нинджа", en: "Ninja" }, icon: "🥷", cat: "hero" },
-
-            // ITEMS (26-50)
+            // ITEMS
             { id: 19, text: { bg: "Топка", en: "Ball" }, icon: "⚽", cat: "item" },
             { id: 20, text: { bg: "Мече", en: "Teddy Bear" }, icon: "🧸", cat: "item" },
             { id: 21, text: { bg: "Количка", en: "Car" }, icon: "🚗", cat: "item" },
@@ -348,8 +338,7 @@
             { id: 84, text: { bg: "Карта", en: "Map" }, icon: "🗺️", cat: "item" },
             { id: 85, text: { bg: "Пица", en: "Pizza" }, icon: "🍕", cat: "item" },
             { id: 86, text: { bg: "Шапка", en: "Hat" }, icon: "🎩", cat: "item" },
-
-            // PLACES (51-75)
+            // PLACES
             { id: 37, text: { bg: "Къща", en: "House" }, icon: "🏠", cat: "place" },
             { id: 38, text: { bg: "Училище", en: "School" }, icon: "🏫", cat: "place" },
             { id: 39, text: { bg: "Пързалка", en: "Slide" }, icon: "🛝", cat: "place" },
@@ -375,8 +364,7 @@
             { id: 91, text: { bg: "Пещера", en: "Cave" }, icon: "🕳️", cat: "place" },
             { id: 92, text: { bg: "Вулкан", en: "Volcano" }, icon: "🌋", cat: "place" },
             { id: 93, text: { bg: "Под вода", en: "Underwater" }, icon: "🪸", cat: "place" },
-
-             // ACTIONS (76-100)
+             // ACTIONS
             { id: 55, text: { bg: "Тича", en: "Run" }, icon: "🏃", cat: "action" },
             { id: 56, text: { bg: "Спи", en: "Sleep" }, icon: "😴", cat: "action" },
             { id: 57, text: { bg: "Яде", en: "Eat" }, icon: "🍽️", cat: "action" },
@@ -410,7 +398,6 @@
         let voices = [];
         let currentLang = 'bg';
 
-        // --- LOCAL STORAGE ---
         function saveSettings() {
             const settings = {
                 lang: currentLang,
@@ -427,7 +414,7 @@
                 const settings = JSON.parse(saved);
                 if (settings.lang) currentLang = settings.lang;
                 document.querySelector('.lang-btn').textContent = currentLang.toUpperCase();
-
+                
                 if (settings.darkMode) {
                     document.body.classList.add('dark-mode');
                     document.querySelector('.dark-btn').textContent = '☀️';
@@ -442,12 +429,7 @@
             document.querySelector('.lang-btn').textContent = currentLang.toUpperCase();
             saveSettings();
             updateUI();
-
-            const cards = document.querySelectorAll('.card');
-            cards.forEach((card, index) => {
-                const item = currentItems[index];
-                if (item) card.querySelector('.card-text').textContent = item.text[currentLang];
-            });
+            updateCardsText();
         }
 
         function toggleDarkMode() {
@@ -457,6 +439,14 @@
             saveSettings();
         }
 
+        function updateCardsText() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                const item = currentItems[index];
+                if (item) card.querySelector('.card-text').textContent = item.text[currentLang];
+            });
+        }
+
         function updateUI() {
             const t = uiText[currentLang];
             document.getElementById('ui-title').textContent = t.title;
@@ -464,16 +454,12 @@
             document.getElementById('ui-item').textContent = t.item;
             document.getElementById('ui-place').textContent = t.place;
             document.getElementById('ui-action').textContent = t.action;
-
             document.getElementById('ui-save').textContent = t.save;
             document.getElementById('ui-roll').textContent = t.roll;
-
-            // Update Options
             document.getElementById('opt-beginner').textContent = t.optBeginner;
             document.getElementById('opt-advanced').textContent = t.optAdvanced;
             document.getElementById('opt-expert').textContent = t.optExpert;
-
-            // Легенда - скриване на Действие при Начинаещ
+            
             const level = document.getElementById('level-select').value;
             if(level === 'beginner') {
                 document.getElementById('leg-action').classList.add('dimmed');
@@ -540,11 +526,22 @@
 
         function rollAll() {
             saveSettings();
-            updateUI(); // Обновява легендата при смяна на ниво
+            updateUI();
 
             const count = parseInt(document.getElementById('count-select').value);
             const level = document.getElementById('level-select').value;
             const board = document.getElementById('game-board');
+
+            // --- МОБИЛНА ОПТИМИЗАЦИЯ НА КОЛОНИТЕ ---
+            if(window.innerWidth < 768) {
+                if(count >= 7) {
+                    board.style.gridTemplateColumns = "repeat(3, 1fr)";
+                } else {
+                    board.style.gridTemplateColumns = "repeat(2, 1fr)";
+                }
+            } else {
+                board.style.gridTemplateColumns = ""; 
+            }
 
             if (currentItems.length !== count) {
                 currentItems = new Array(count).fill(null);
@@ -553,7 +550,6 @@
                 board.innerHTML = '';
             }
 
-            // Категории
             const heroes = shuffle(db.filter(x => x.cat === 'hero'));
             const items = shuffle(db.filter(x => x.cat === 'item'));
             const places = shuffle(db.filter(x => x.cat === 'place'));
@@ -561,13 +557,12 @@
 
             let selectionPlan = [];
 
-            // 1. BEGINNER (3 Categories: Hero, Item, Place)
+            // 1. BEGINNER
             if (level === 'beginner') {
-                let limits = { hero: 0, item: 0, place: 0 };
                 const cats3 = ['hero', 'item', 'place'];
                 const rnd3 = () => cats3[Math.floor(Math.random() * cats3.length)];
-
-                // Стриктна логика за 3 категории
+                let limits = {hero:1, item:1, place:1}; 
+                
                 switch(count) {
                     case 3: limits = {hero:1, item:1, place:1}; break;
                     case 4: limits = {hero:1, item:1, place:1}; limits[rnd3()]++; break;
@@ -576,46 +571,48 @@
                     case 7: limits = {hero:2, item:2, place:2}; limits[rnd3()]++; break;
                     case 8: limits = {hero:3, item:3, place:3}; limits[rnd3()]--; break;
                     case 9: limits = {hero:3, item:3, place:3}; break;
-                    default: limits = {hero:1, item:1, place:1}; // Fallback
+                    default: 
+                         while(selectionPlan.length < count) selectionPlan.push(rnd3());
                 }
-                // Генерираме плана за масива
-                for(let k=0; k<limits.hero; k++) selectionPlan.push('hero');
-                for(let k=0; k<limits.item; k++) selectionPlan.push('item');
-                for(let k=0; k<limits.place; k++) selectionPlan.push('place');
+                
+                if(selectionPlan.length === 0) {
+                    for(let k=0; k<limits.hero; k++) selectionPlan.push('hero');
+                    for(let k=0; k<limits.item; k++) selectionPlan.push('item');
+                    for(let k=0; k<limits.place; k++) selectionPlan.push('place');
+                }
                 selectionPlan = shuffle(selectionPlan);
-            }
-
-            // 2. ADVANCED (4 Categories: Hero, Action, Item, Place)
+            } 
+            
+            // 2. ADVANCED
             else if (level === 'advanced') {
-                let limits = { hero: 0, action: 0, item: 0, place: 0 };
                 const cats4 = ['hero', 'action', 'item', 'place'];
                 const rnd4 = () => cats4[Math.floor(Math.random() * cats4.length)];
+                let limits = {hero:1, action:1, item:1, place:1};
 
-                // Стриктна логика за 4 категории
                 switch(count) {
-                    case 3: limits = {hero:1, action:1, item:1, place:0}; break; // Fallback макар мин да е 4
+                    case 3: limits = {hero:1, action:1, item:1, place:0}; break; 
                     case 4: limits = {hero:1, action:1, item:1, place:1}; break;
                     case 5: limits = {hero:1, action:1, item:1, place:1}; limits[rnd4()]++; break;
-                    case 6: limits = {hero:1, action:1, item:1, place:1}; limits[rnd4()]++; limits[rnd4()]++; break; // +2 random
+                    case 6: limits = {hero:1, action:1, item:1, place:1}; limits[rnd4()]++; limits[rnd4()]++; break; 
                     case 7: limits = {hero:2, action:2, item:2, place:2}; limits[rnd4()]--; break;
                     case 8: limits = {hero:2, action:2, item:2, place:2}; break;
                     case 9: limits = {hero:2, action:2, item:2, place:2}; limits[rnd4()]++; break;
+                    default: 
+                         while(selectionPlan.length < count) selectionPlan.push(rnd4());
                 }
-                 // Генерираме плана
-                for(let k=0; k<limits.hero; k++) selectionPlan.push('hero');
-                for(let k=0; k<limits.action; k++) selectionPlan.push('action');
-                for(let k=0; k<limits.item; k++) selectionPlan.push('item');
-                for(let k=0; k<limits.place; k++) selectionPlan.push('place');
 
-                // Ако случайно надвиши count (при 6 карти с повтарящ се random), орязваме
+                 if(selectionPlan.length === 0) {
+                    for(let k=0; k<limits.hero; k++) selectionPlan.push('hero');
+                    for(let k=0; k<limits.action; k++) selectionPlan.push('action');
+                    for(let k=0; k<limits.item; k++) selectionPlan.push('item');
+                    for(let k=0; k<limits.place; k++) selectionPlan.push('place');
+                }
                 while(selectionPlan.length > count) selectionPlan.pop();
-                // Ако липсва (при сложна рандомизация), добавяме
                 while(selectionPlan.length < count) selectionPlan.push(rnd4());
-
                 selectionPlan = shuffle(selectionPlan);
             }
 
-            // 3. EXPERT (Chaos / Random Mix)
+            // 3. EXPERT
             else {
                 const cats = ['hero', 'item', 'place', 'action'];
                 for(let k=0; k<count; k++) {
@@ -718,10 +715,7 @@
 
         window.onload = function() {
             loadSettings();
-            // Ако няма записано ниво, слагаме Beginner по подразбиране
-            if(!localStorage.getItem('storyDiceSettings')) {
-                document.getElementById('level-select').value = 'beginner';
-            }
+            if(!localStorage.getItem('storyDiceSettings')) document.getElementById('level-select').value = 'beginner';
             updateUI();
             rollAll();
         };
